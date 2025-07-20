@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const CLIENT_ID = "169003";
 const CLIENT_SECRET = "f73957ebaa4dc5ffe0fd1785729a6ddd0e36daec";
 const isLocalhost = window.location.hostname === "localhost";
-const REDIRECT_URI = isLocalhost
+const redirectUri = isLocalhost
   ? "http://localhost:3000/strava-callback"
   : "https://run-app.vercel.app/strava-callback"; // עדכן לכתובת שלך ב-Vercel
 
@@ -20,7 +20,6 @@ export default function StravaCallback() {
       return;
     }
     setStatus("מחליף קוד ל-access_token...");
-    console.log("Exchanging code for token...", code);
     fetch("https://www.strava.com/oauth/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -29,7 +28,7 @@ export default function StravaCallback() {
         client_secret: CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
       }),
     })
       .then((res) => {
