@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 
 const CLIENT_ID = "169003";
 const CLIENT_SECRET = "f73957ebaa4dc5ffe0fd1785729a6ddd0e36daec";
-const REDIRECT_URI = "http://localhost:3000/strava-callback";
+const isLocalhost = window.location.hostname === "localhost";
+const REDIRECT_URI = isLocalhost
+  ? "http://localhost:3000/strava-callback"
+  : "https://run-app.vercel.app/strava-callback"; // עדכן לכתובת שלך ב-Vercel
 
 export default function StravaCallback() {
   const [status, setStatus] = useState("טוען...");
@@ -12,10 +15,12 @@ export default function StravaCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     if (!code) {
-      setError("לא התקבל קוד הרשאה מ-Strava");
+      setError("לא התקבל קוד הרשאה מ-Strava. ודא שאישרת את ההרשאות.");
+      console.error("No code in URL params", window.location.search);
       return;
     }
-    // שלב 1: החלפת code ל-access_token
+    setStatus("מחליף קוד ל-access_token...");
+    console.log("Exchanging code for token...", code);
     fetch("https://www.strava.com/oauth/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -24,23 +29,30 @@ export default function StravaCallback() {
         client_secret: CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
+        redirect_uri: REDIRECT_URI,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("Strava token response status:", res.status);
+        return res.json();
+      })
       .then((data) => {
+        console.log("Strava token response data:", data);
         if (data.access_token) {
           setStatus("התחברת בהצלחה! טוען נתוני ריצה...");
-          // שמור את ה-token בזיכרון (אפשר גם ב-localStorage)
           localStorage.setItem("strava_access_token", data.access_token);
-          // הפנה לדשבורד
           window.location.href = "/dashboard";
         } else {
           setError("שגיאה בקבלת access_token: " + (data.message || JSON.stringify(data)));
         }
       })
-      .catch((err) => setError("שגיאה: " + err.message));
+      .catch((err) => {
+        setError("שגיאה: " + err.message);
+        console.error("Token exchange error:", err);
+      });
   }, []);
 
-  if (error) return <div style={{color: 'red'}}>{error}</div>;
-  return <div>{status}</div>;
+  if (error) return <div style={{color: 'red', fontWeight: 'bold'}}>{error}</div>;
+  if (status) return <div>{status}</div>;
+  return <div>לא נטען כלום. בדוק את ה-console.</div>;
 } 
