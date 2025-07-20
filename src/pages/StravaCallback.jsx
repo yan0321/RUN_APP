@@ -5,7 +5,7 @@ const CLIENT_SECRET = "f73957ebaa4dc5ffe0fd1785729a6ddd0e36daec";
 const isLocalhost = window.location.hostname === "localhost";
 const redirectUri = isLocalhost
   ? "http://localhost:3000/strava-callback"
-  : "https://run-app.vercel.app/strava-callback"; // עדכן לכתובת שלך ב-Vercel
+  : "https://run-app-flax.vercel.app/strava-callback";
 
 export default function StravaCallback() {
   const [status, setStatus] = useState("טוען...");

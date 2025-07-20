@@ -3,7 +3,7 @@ import React from "react";
 const isLocalhost = window.location.hostname === "localhost";
 const redirectUri = isLocalhost
   ? "http://localhost:3000/strava-callback"
-  : "https://run-app.vercel.app/strava-callback"; // עדכן לכתובת שלך ב-Vercel
+  : "https://run-app-flax.vercel.app/strava-callback";
 
 const StravaConnectButton = () => {
   const handleConnect = () => {
