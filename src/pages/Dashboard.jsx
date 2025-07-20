@@ -72,11 +72,40 @@ export default function Dashboard() {
   const token = localStorage.getItem("strava_access_token");
 
   if (!token) {
+    // לא מחובר — הצג כפתור התחברות ונתוני דמו
     return (
       <div>
-        <h2 className="text-2xl font-bold mb-4">Weekly Progress</h2>
+        <h2 className="text-2xl font-bold mb-4">Weekly Progress (Demo)</h2>
         <p>כדי לראות את הריצות שלך, התחבר ל-Strava:</p>
         <StravaConnectButton />
+        <Bar data={{
+          labels: sampleRuns.map((r) => r.date),
+          datasets: [
+            {
+              label: "Distance (km)",
+              data: sampleRuns.map((r) => r.distance),
+              borderWidth: 1,
+            },
+          ],
+        }} />
+        <table className="mt-6 w-full border text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-2 border">Date</th>
+              <th className="p-2 border">Distance (km)</th>
+              <th className="p-2 border">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sampleRuns.map((run) => (
+              <tr key={run.id} className="text-center">
+                <td className="border p-2">{run.date}</td>
+                <td className="border p-2">{run.distance}</td>
+                <td className="border p-2">{run.time}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
